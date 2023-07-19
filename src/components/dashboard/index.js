@@ -1,11 +1,19 @@
 import React, { useCallback } from 'react';
 import { Alert, Button, Divider, Drawer } from 'rsuite';
 import { profilefun } from '../../context/profile.context';
-import { auth } from '../../misc/firebase';
+import { auth, database } from '../../misc/firebase';
 import Editable from '../editable';
 const Dashboard = ({ signout }) => {
   const { profile } = profilefun();
-  const onSave = async newdata => {};
+  const onSave = async newdata => {
+    const namefield = database.ref(`/profiles/${profile.id}`).child('name');
+    try {
+      await namefield.set(newdata);
+      Alert.info('Updated Successfully', 4000);
+    } catch (err) {
+      Alert.info('Error Occurred', 4000);
+    }
+  };
   return (
     <>
       <Drawer.Header>

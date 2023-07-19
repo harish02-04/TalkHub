@@ -6,6 +6,7 @@ const SignIn = () => {
   const signinwithprovider = async provider => {
     try {
       const { additionalUserInfo, user } = await auth.signInWithPopup(provider);
+      console.log(additionalUserInfo);
       if (additionalUserInfo.isNewUser) {
         database.ref(`/profiles/${user.uid}`).set({
           name: user.displayName,
