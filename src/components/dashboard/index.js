@@ -3,6 +3,8 @@ import { Alert, Button, Divider, Drawer } from 'rsuite';
 import { profilefun } from '../../context/profile.context';
 import { auth, database } from '../../misc/firebase';
 import Editable from '../editable';
+import Providerblock from './Providerblock';
+import Avatar from './Avatarup';
 const Dashboard = ({ signout }) => {
   const { profile } = profilefun();
   const onSave = async newdata => {
@@ -21,6 +23,7 @@ const Dashboard = ({ signout }) => {
       </Drawer.Header>
       <Drawer.Body>
         <h3>Hey,{profile.name}</h3>
+        <Providerblock></Providerblock>
         <Divider />
         <Editable
           name="nickname"
@@ -28,6 +31,7 @@ const Dashboard = ({ signout }) => {
           onSave={onSave}
           label={<h6 className="mb-2">Nickname</h6>}
         ></Editable>
+        <Avatar></Avatar>
       </Drawer.Body>
       <Drawer.Footer>
         <Button block color="red" onClick={signout}>
