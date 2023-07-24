@@ -1,6 +1,7 @@
 import { useCallback, useState, useEffect } from 'react';
 
-export function useModalstate(defaultValue = false) {
+// eslint-disable-next-line no-unused-vars
+export function useModalstate(_defaultValue = false) {
   const [isopen, setisopen] = useState();
   const open = useCallback(() => setisopen(true), []);
   const close = useCallback(() => setisopen(false), []);

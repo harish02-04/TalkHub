@@ -1,7 +1,7 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { Alert, Button, Divider, Drawer } from 'rsuite';
 import { profilefun } from '../../context/profile.context';
-import { auth, database } from '../../misc/firebase';
+import { database } from '../../misc/firebase';
 import Editable from '../editable';
 import Providerblock from './Providerblock';
 import Avatar from './Avatarup';

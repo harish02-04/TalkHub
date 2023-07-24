@@ -6,3 +6,11 @@ export function getnameinitials(username) {
     return splitname[0][0];
   }
 }
+export function transform(snap) {
+  console.log(snap);
+  return snap
+    ? Object.keys(snap).map(roomid => {
+        return { ...snap[roomid], id: roomid };
+      })
+    : [];
+}

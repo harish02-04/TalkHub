@@ -6,6 +6,7 @@ const Editable = ({
   label = null,
   placeholder = 'Write ur value',
   onSave,
+  // eslint-disable-next-line no-unused-vars
   empty = 'Input is empty',
   ...inputprops
 }) => {
@@ -17,6 +18,7 @@ const Editable = ({
   const oneditclick = useCallback(() => {
     setedit(p => !p);
     setinp(initial);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const onsaveclick = async () => {
     const trim = inp.trim();
