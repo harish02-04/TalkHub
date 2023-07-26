@@ -4,7 +4,7 @@ import './styles/main.scss';
 import 'rsuite/dist/styles/rsuite-default.css';
 import SignIn from './Pages/signin';
 import PrivateRoute from './components/private';
-import Home from './Pages/home';
+import Home from './Pages/home/home';
 import PublicRoute from './components/publicroute';
 import { Profileprovider } from './context/profile.context';
 function App() {
