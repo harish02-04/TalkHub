@@ -14,3 +14,27 @@ export function transform(snap) {
       })
     : [];
 }
+export async function getuserupdate(userid, key, value, database) {
+  console.log(value);
+  const updates = {};
+  updates[`profiles/${userid}/${key}`] = value;
+  const getmessages = database
+    .ref('/messages')
+    .orderByChild('author/uid')
+    .equalTo(userid)
+    .once('value');
+  const getrooms = database
+    .ref('/rooms')
+    .orderByChild('lastmessage/author/uid')
+    .equalTo(userid)
+    .once('value');
+  const [msnap, rsnap] = await Promise.all([getmessages, getrooms]);
+  msnap.forEach(ms => {
+    updates[`/messages/${ms.key}/author/${key}`] = value;
+  });
+  rsnap.forEach(rs => {
+    updates[`/rooms/${rs.key}/lastmessage/author/${key}`] = value;
+  });
+
+  return updates;
+}

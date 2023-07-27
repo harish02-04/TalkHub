@@ -5,15 +5,22 @@ import { database } from '../../misc/firebase';
 import Editable from '../editable';
 import Providerblock from './Providerblock';
 import Avatar from './Avatarup';
+import { getuserupdate } from '../../misc/helper';
 const Dashboard = ({ signout }) => {
   const { profile } = profilefun();
   const onSave = async newdata => {
-    const namefield = database.ref(`/profiles/${profile.id}`).child('name');
     try {
-      await namefield.set(newdata);
+      const updates = await getuserupdate(
+        profile.id,
+        'name',
+        newdata,
+        database
+      );
+      console.log('updates' + updates);
+      await database.ref().update(updates);
       Alert.info('Updated Successfully', 4000);
     } catch (err) {
-      Alert.info('Error Occurred', 4000);
+      Alert.info(err.message, 4000);
     }
   };
   return (
