@@ -3,7 +3,7 @@ import { Button, Modal } from 'rsuite';
 import { useMediaQuery, useModalstate } from '../../../misc/customhooks';
 import Profileavatar from '../../dashboard/Profileavatar';
 
-const Profilleinfo = ({ profile, ...props }) => {
+const Profilleinfo = ({ profile, children, ...props }) => {
   const { open, isopen, close } = useModalstate();
   const sname = profile.name.split(' ')[0];
   const d = new Date(profile.createdAt).toLocaleDateString();
@@ -26,6 +26,7 @@ const Profilleinfo = ({ profile, ...props }) => {
           <p>Member since {d}</p>
         </Modal.Body>
         <Modal.Footer>
+          {children}
           <Button block onClick={close}>
             Close
           </Button>

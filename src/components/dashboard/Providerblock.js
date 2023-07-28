@@ -4,10 +4,10 @@ import firebase from 'firebase/app';
 import { Tag, Icon, Button, Alert } from 'rsuite';
 const Providerblock = () => {
   const [isconnected, setisconnected] = useState({
-    'google.com': auth.currentUser.providerData.some(
+    'google.com': auth.currentUser?.providerData.some(
       data => data.providerId === 'google.com'
     ),
-    'facebook.com': auth.currentUser.providerData.some(
+    'facebook.com': auth.currentUser?.providerData.some(
       data => data.providerId === 'facebook.com'
     ),
   });

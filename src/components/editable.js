@@ -8,6 +8,7 @@ const Editable = ({
   onSave,
   // eslint-disable-next-line no-unused-vars
   empty = 'Input is empty',
+  wrapper = '',
   ...inputprops
 }) => {
   const [inp, setinp] = useState(initial);
@@ -31,7 +32,7 @@ const Editable = ({
     setedit(false);
   };
   return (
-    <div>
+    <div className={wrapper}>
       {label}
       <InputGroup>
         <Input

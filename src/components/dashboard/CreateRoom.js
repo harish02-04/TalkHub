@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useRef } from 'react';
 import firebase from 'firebase/app';
-import { database } from '../../misc/firebase';
+import { auth, database } from '../../misc/firebase';
 import {
   Alert,
   Button,
@@ -40,6 +40,9 @@ const CreateRoom = () => {
     const newdata = {
       ...fs,
       createdAt: firebase.database.ServerValue.TIMESTAMP,
+      admins: {
+        [auth.currentUser.uid]: true,
+      },
     };
     try {
       await database.ref('rooms').push(newdata);

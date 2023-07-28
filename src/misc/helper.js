@@ -38,3 +38,7 @@ export async function getuserupdate(userid, key, value, database) {
 
   return updates;
 }
+
+export function transformToarr(snap) {
+  return snap ? Object.keys(snap) : [];
+}

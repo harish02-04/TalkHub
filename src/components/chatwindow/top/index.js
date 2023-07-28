@@ -4,8 +4,10 @@ import { Link } from 'react-router-dom';
 import { ButtonToolbar, Icon } from 'rsuite';
 import { useMediaQuery } from '../../../misc/customhooks';
 import RoomInfo from './RoomInfo';
+import EditRoom from './EditRoom';
 const Top = () => {
   const name = useCurrentRoom(v => v.name);
+  const isadmin = useCurrentRoom(v => v.isadmin);
   const isMobile = useMediaQuery('(max-width: 992px)');
   console.log(isMobile);
   return (
@@ -25,7 +27,9 @@ const Top = () => {
           ></Icon>
           <span className="text-disappear">{name}</span>
         </h4>
-        <ButtonToolbar className="ws-nowrap">Todo</ButtonToolbar>
+        <ButtonToolbar className="ws-nowrap">
+          {isadmin && <EditRoom></EditRoom>}
+        </ButtonToolbar>
       </div>
       <div className="d-flex justify-content-between align-items-center">
         <span>todo</span>
