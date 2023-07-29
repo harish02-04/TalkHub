@@ -9,15 +9,25 @@ import { useCurrentRoom } from '../../../context/current-rrom-context';
 import { memo } from 'react';
 import { useCallback } from 'react';
 import { useParams } from 'react-router-dom/cjs/react-router-dom.min';
-const Msgitem = ({ msg, handleadmin }) => {
-  const { author, createdAt, text } = msg;
+import { useHover } from '@uidotdev/usehooks';
+import IconBtnControl from './IconBtnControl';
+import { useMediaQuery } from '../../../misc/customhooks';
+const Msgitem = ({ msg, handleadmin, handlelike, handledelete }) => {
+  const { author, createdAt, text, likes, likecount } = msg;
+  const [ref, ishover] = useHover();
   const isadmin = useCurrentRoom(v => v.isadmin);
   const admins = useCurrentRoom(v => v.admins);
   const ismsgauthoradmin = admins.includes(author.uid);
   const isauthor = auth.currentUser.uid === author.uid;
   const Canaccess = isadmin && !isauthor;
+  const isliked = likes && Object.keys(likes).includes(auth.currentUser.uid);
+  const ismobile = useMediaQuery('(max-width:992px)');
+  const canshow = ismobile || ishover;
   return (
-    <li className="padded mb-1">
+    <li
+      className={`padded mb-1 cursor-pointer ${ishover ? 'bg-black-02' : ''}`}
+      ref={ref}
+    >
       <div className="d-flex align-items-center font-bolder mb-1">
         <Presentdot uid={author.uid}></Presentdot>
         <Profileavatar
@@ -44,6 +54,23 @@ const Msgitem = ({ msg, handleadmin }) => {
           datetime={createdAt}
           className="font-normal text-black-45 ml-2"
         ></TimeAgo>
+        <IconBtnControl
+          // eslint-disable-next-line no-constant-condition
+          {...(isliked ? { color: 'red' } : {})}
+          isVisible={canshow}
+          IconName="heart"
+          tooltip="Like this message"
+          onClick={() => handlelike(msg.id)}
+          badgeContent={likecount}
+        ></IconBtnControl>
+        {isauthor && (
+          <IconBtnControl
+            isVisible={canshow}
+            IconName="close"
+            tooltip="Delete this message"
+            onClick={() => handledelete(msg.id)}
+          ></IconBtnControl>
+        )}
       </div>
       <div>
         <span className="word-break-all">{text}</span>
