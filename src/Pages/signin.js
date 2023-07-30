@@ -33,8 +33,8 @@ const SignIn = () => {
           <Col xs={24} md={12} mdOffset={6}>
             <Panel>
               <div className="text-center">
-                <h2>Hi! This is TalkHub </h2>
-                <p>Progressive chat platform</p>
+                <h2>𝑻𝒂𝒍𝒌𝑯𝒖𝒃😉</h2>
+                <p>A public chatting platform</p>
               </div>
               <div className="mt-3">
                 <Button block color="blue" onClick={facebooksignin}>

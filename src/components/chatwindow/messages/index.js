@@ -1,15 +1,24 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import { useParams } from 'react-router-dom/cjs/react-router-dom.min';
-import { auth, database } from '../../../misc/firebase';
-import { transform } from '../../../misc/helper';
+import { auth, database, storage } from '../../../misc/firebase';
+import { groupBy, transform } from '../../../misc/helper';
 import { useCallback } from 'react';
 import Msgitem from './Msgitem';
-import { Alert } from 'rsuite';
+import { Alert, Button } from 'rsuite';
+const MAX_SIZE = 15;
+const mref = database.ref('/messages');
+function stb(node, t = 30) {
+  const percent =
+    (100 * node.scrollTop) / (node.scrollHeight - node.clientHeight) || 0;
+  return percent > t;
+}
 const Messages = () => {
   const { chatid } = useParams();
   const [msg, setmsg] = useState(null);
+  const [limit, setlimit] = useState(MAX_SIZE);
+  const selfref = useRef();
   const handlelike = useCallback(async mid => {
     const { uid } = auth.currentUser;
 
@@ -35,7 +44,7 @@ const Messages = () => {
     Alert.info(amsg, 4000);
   }, []);
   const handledelete = useCallback(
-    async mid => {
+    async (mid, file) => {
       if (!window.confirm('Delete this message?')) {
         return;
       }
@@ -57,7 +66,15 @@ const Messages = () => {
         await database.ref().update(update);
         Alert.info('Message deleted', 4000);
       } catch (err) {
-        Alert.error(err.message, 4000);
+        return Alert.error(err.message, 4000);
+      }
+      if (file) {
+        try {
+          const fileRef = await storage.refFromURL(file.url);
+          await fileRef.delete();
+        } catch (err) {
+          Alert.error(err.message, 4000);
+        }
       }
     },
     [chatid, msg]
@@ -85,35 +102,80 @@ const Messages = () => {
     },
     [chatid]
   );
+  const loadmessages = useCallback(
+    limitlast => {
+      const node = selfref.current;
+      mref.off();
+      mref
+        .orderByChild('roomId')
+        .equalTo(chatid)
+        .limitToLast(limitlast || MAX_SIZE)
+        .on('value', snap => {
+          const data = transform(snap.val());
+          setmsg(data);
+
+          if (stb(node)) {
+            node.scrollTop = node.scrollHeight;
+          }
+        });
+      setlimit(p => p + MAX_SIZE);
+    },
+    [chatid]
+  );
+  const onloadmore = useCallback(() => {
+    const node = selfref.current;
+    const old = node.scrollHeight;
+    loadmessages(limit);
+    setTimeout(() => {
+      const newH = node.scrollHeight;
+      node.scrollTop = newH - old;
+    }, 1000);
+  }, [loadmessages, limit]);
   useEffect(() => {
-    const mref = database.ref('/messages');
-    mref
-      .orderByChild('roomId')
-      .equalTo(chatid)
-      .on('value', snap => {
-        const data = transform(snap.val());
-        setmsg(data);
-      });
+    const node = selfref.current;
+    loadmessages();
+    setTimeout(() => {
+      node.scrollTop = node.scrollHeight;
+    }, 1000);
 
     return () => {
       mref.off('value');
     };
-  }, [chatid]);
+  }, [loadmessages]);
+
+  const renderMessage = () => {
+    const grps = groupBy(msg, item => new Date(item.createdAt).toDateString());
+    const items = [];
+    Object.keys(grps).forEach(date => {
+      items.push(
+        <li key={date} className="text-center mb-1 padded">
+          {date}
+        </li>
+      );
+      const msgs = grps[date].map(msg => (
+        <Msgitem
+          key={msg.id}
+          msg={msg}
+          handleadmin={handleadmin}
+          handlelike={handlelike}
+          handledelete={handledelete}
+        />
+      ));
+      items.push(...msgs);
+    });
+    return items;
+  };
   return (
-    <ul className="msg-list custom-scroll">
+    <ul ref={selfref} className="msg-list custom-scroll">
+      {msg && msg.length >= MAX_SIZE && (
+        <li className="text-center mt-2 mb-2">
+          <Button onClick={onloadmore} color="green">
+            LoadMore
+          </Button>
+        </li>
+      )}
       {ischatemp && <li>No messages yet</li>}
-      {canshow &&
-        msg.map(msg => (
-          <Msgitem
-            key={msg.id}
-            msg={msg}
-            handleadmin={handleadmin}
-            handlelike={handlelike}
-            handledelete={handledelete}
-          >
-            {' '}
-          </Msgitem>
-        ))}
+      {canshow && renderMessage()}
     </ul>
   );
 };

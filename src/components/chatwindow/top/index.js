@@ -7,6 +7,7 @@ import RoomInfo from './RoomInfo';
 import EditRoom from './EditRoom';
 const Top = () => {
   const name = useCurrentRoom(v => v.name);
+  const des = useCurrentRoom(v => v.description);
   const isadmin = useCurrentRoom(v => v.isadmin);
   const isMobile = useMediaQuery('(max-width: 992px)');
   console.log(isMobile);
@@ -32,7 +33,7 @@ const Top = () => {
         </ButtonToolbar>
       </div>
       <div className="d-flex justify-content-between align-items-center">
-        <span>todo</span>
+        <span>{des}</span>
         <RoomInfo></RoomInfo>
       </div>
     </div>

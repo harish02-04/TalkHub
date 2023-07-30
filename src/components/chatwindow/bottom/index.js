@@ -6,6 +6,8 @@ import { useParams } from 'react-router';
 import firebase from 'firebase/app';
 import { profilefun } from '../../../context/profile.context';
 import { database } from '../../../misc/firebase';
+import Attach from './Attach';
+import Audio from './Audio';
 function assembleMessage(profile, chatId) {
   return {
     roomId: chatId,
@@ -57,9 +59,37 @@ const Bottom = () => {
       onsendclick();
     }
   };
+
+  const afterUp = useCallback(
+    async files => {
+      setload(true);
+      const update = {};
+      files.forEach(f => {
+        const msgdata = assembleMessage(profile, chatid);
+        msgdata.file = f;
+        const messid = database.ref('messages').push().key;
+        update[`/messages/${messid}`] = msgdata;
+      });
+      const lastMsgId = Object.keys(update).pop();
+      update[`/rooms/${chatid}/lastmessage`] = {
+        ...update[lastMsgId],
+        msgId: lastMsgId,
+      };
+      try {
+        await database.ref().update(update);
+        setload(false);
+      } catch (err) {
+        Alert.error('Error occured', 4000);
+        setload(false);
+      }
+    },
+    [chatid, profile]
+  );
   return (
-    <div>
+    <>
       <InputGroup>
+        <Attach afterUp={afterUp} />
+        <Audio afterUp={afterUp}></Audio>
         <Input
           placeholder="Say Hi!"
           value={inp}
@@ -75,7 +105,7 @@ const Bottom = () => {
           <Icon icon="send"></Icon>
         </InputGroup.Button>
       </InputGroup>
-    </div>
+    </>
   );
 };
 

@@ -12,9 +12,29 @@ import { useParams } from 'react-router-dom/cjs/react-router-dom.min';
 import { useHover } from '@uidotdev/usehooks';
 import IconBtnControl from './IconBtnControl';
 import { useMediaQuery } from '../../../misc/customhooks';
+import Img from './Img';
+
+const renderFileMsg = file => {
+  if (file.contentType.includes('image')) {
+    return (
+      <div className="height-220">
+        <Img src={file.url} filename={file.name}></Img>
+      </div>
+    );
+  }
+  if (file.contentType.includes('audio')) {
+    return (
+      <audio controls>
+        <source src={file.url} type="audio/mp3"></source>
+        Your browser is not supporting audio files
+      </audio>
+    );
+  }
+  return <a href={file.url}>Download {file.name}</a>;
+};
 const Msgitem = ({ msg, handleadmin, handlelike, handledelete }) => {
-  const { author, createdAt, text, likes, likecount } = msg;
-  const [ref, ishover] = useHover();
+  const { author, createdAt, text, file, likes, likecount } = msg;
+  const [sref, ishover] = useHover();
   const isadmin = useCurrentRoom(v => v.isadmin);
   const admins = useCurrentRoom(v => v.admins);
   const ismsgauthoradmin = admins.includes(author.uid);
@@ -26,7 +46,7 @@ const Msgitem = ({ msg, handleadmin, handlelike, handledelete }) => {
   return (
     <li
       className={`padded mb-1 cursor-pointer ${ishover ? 'bg-black-02' : ''}`}
-      ref={ref}
+      ref={sref}
     >
       <div className="d-flex align-items-center font-bolder mb-1">
         <Presentdot uid={author.uid}></Presentdot>
@@ -68,12 +88,13 @@ const Msgitem = ({ msg, handleadmin, handlelike, handledelete }) => {
             isVisible={canshow}
             IconName="close"
             tooltip="Delete this message"
-            onClick={() => handledelete(msg.id)}
+            onClick={() => handledelete(msg.id, file)}
           ></IconBtnControl>
         )}
       </div>
       <div>
-        <span className="word-break-all">{text}</span>
+        {text && <span className="word-break-all">{text}</span>}
+        {file && renderFileMsg(file)}
       </div>
     </li>
   );

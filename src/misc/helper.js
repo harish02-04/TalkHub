@@ -42,3 +42,14 @@ export async function getuserupdate(userid, key, value, database) {
 export function transformToarr(snap) {
   return snap ? Object.keys(snap) : [];
 }
+
+export function groupBy(arr, gkeyFn) {
+  return arr.reduce((result, item) => {
+    const gkey = gkeyFn(item);
+    if (!result[gkey]) {
+      result[gkey] = [];
+    }
+    result[gkey].push(item);
+    return result;
+  }, {});
+}
